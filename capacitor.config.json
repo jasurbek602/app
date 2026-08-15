@@ -1,0 +1,12 @@
+{
+  "appId": "com.chemchat.app",
+  "appName": "ChemChat",
+  "webDir": "public",
+  "server": {
+    "url": "https://securitychat-three.vercel.app",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
