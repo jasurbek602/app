@@ -1,11 +1,5 @@
 name: Android APK yig'ish
 
-# Qo'lda ishga tushirish (Actions tabidan "Run workflow") yoki main
-# branch'ga push qilinganda avtomatik ishlaydi.
-# Eslatma: "on" kaliti qo'shtirnoqsiz yozilsa, ba'zi YAML parserlar
-# (shu jumladan ba'zan GitHub'ning o'zi) uni "true" degan boolean
-# qiymat deb noto'g'ri o'qib, "No event triggers defined in `on`"
-# xatosini beradi - shuning uchun pastda "on" qo'shtirnoq ichida.
 "on":
   workflow_dispatch:
   push:
@@ -24,7 +18,7 @@ jobs:
           node-version: 20
 
       - name: JDK o'rnatish (Android build uchun shart)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
@@ -37,6 +31,18 @@ jobs:
 
       - name: Android platformasini yaratish
         run: npx cap add android
+
+      - name: Kotlin stdlib "duplicate class" muammosini tuzatish
+        run: |
+          cat >> android/build.gradle << 'EOF'
+
+          allprojects {
+              configurations.all {
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+                  exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+              }
+          }
+          EOF
 
       - name: Web fayllarni Android loyihasiga sinxronlash
         run: npx cap sync android
@@ -58,4 +64,3 @@ jobs:
         with:
           name: chemchat-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
